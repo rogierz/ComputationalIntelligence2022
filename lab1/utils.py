@@ -1,6 +1,7 @@
 import logging
 import heapq
 import numpy as np
+from functools import reduce
 from typing import Callable
 
 class PriorityQueue:
