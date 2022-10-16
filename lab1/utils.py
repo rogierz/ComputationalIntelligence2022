@@ -4,6 +4,7 @@ import numpy as np
 from functools import reduce
 from typing import Callable
 
+
 class PriorityQueue:
     """A basic Priority Queue with simple performance optimizations"""
 
@@ -29,19 +30,26 @@ class PriorityQueue:
         self._data_set.remove(item)
         return item
 
+
 class State:
-    def __init__(self, data: np.ndarray):
-        self._data = data.copy()
-        self._data.flags.writeable = False
+    def __init__(self, data: tuple):
+        self._data = data
 
     def __hash__(self):
-        return hash(bytes(self._data))
+        return hash(tuple(bytes(t) for t in self._data))
 
     def __eq__(self, other):
-        return bytes(self._data) == bytes(other._data)
+        first_inner = self._data[0] == other._data[0]
+        second_inner = self._data[1] == other._data[1]
+
+        first = first_inner if type(first_inner) is bool else first_inner.all()
+        second = second_inner if type(
+            second_inner) is bool else second_inner.all()
+
+        return first and second
 
     def __lt__(self, other):
-        return bytes(self._data) < bytes(other._data)
+        return self._data[0].sum() > other._data[0].sum()
 
     def __str__(self):
         return str(self._data)
@@ -53,8 +61,6 @@ class State:
     def data(self):
         return self._data
 
-    def copy_data(self):
-        return self._data.copy()
 
 def search(
     initial_state: State,
@@ -73,13 +79,13 @@ def search(
     state = initial_state
     parent_state[state] = None
     state_cost[state] = 0
-
+    visited_counter = 0
     while state is not None and not goal_test(state):
         logging.debug(f"Entering in state: {state.data}")
         logging.debug(f"Building frontier...")
         # Build the frontier
         for a in possible_actions(state):
-            
+
             new_state = result(state, a)
             cost = unit_cost(a)
 
@@ -87,24 +93,28 @@ def search(
                 parent_state[new_state] = state
                 state_cost[new_state] = state_cost[state] + cost
                 frontier.push(new_state, p=priority_function(new_state))
-                logging.debug(f"Added new node to frontier (cost={state_cost[new_state]})")
+                logging.debug(
+                    f"Added new node to frontier (cost={state_cost[new_state]})")
             elif new_state in frontier and state_cost[new_state] > state_cost[state] + cost:
                 old_cost = state_cost[new_state]
                 parent_state[new_state] = state
                 state_cost[new_state] = state_cost[state] + cost
-                logging.debug(f"Updated node cost in frontier: {old_cost} -> {state_cost[new_state]}")
+                logging.debug(
+                    f"Updated node cost in frontier: {old_cost} -> {state_cost[new_state]}")
 
         # Get the next node to visit
         if frontier:
             state = frontier.pop()
+            visited_counter += 1
         else:
             state = None
 
     path = list()
     s = state
     while s:
-        path.append(s.copy_data())
+        path.append(s.data)
         s = parent_state[s]
 
-    logging.info(f"Found a solution in {len(path):,} steps; visited {len(state_cost):,} states")
+    logging.info(
+        f"Found a solution in {len(path):,} steps; visited {visited_counter} nodes")
     return list(reversed(path))
