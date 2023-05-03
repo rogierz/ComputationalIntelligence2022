@@ -10,4 +10,6 @@ Computiational Intelligence @ Politecnico di Torino A.A. 2022/2023
 - [Review #2](https://github.com/francescoscalera99/CI_2022_292432/issues/2)
 
 ### Lab2
+
 - [Review #1](https://github.com/feurode46/computational-intelligence-2022/issues/3)
+- [Review #2](https://github.com/ricanicida/computational-intelligence-22/issues/4)
