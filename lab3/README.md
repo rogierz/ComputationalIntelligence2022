@@ -17,3 +17,11 @@ Standard population-based evolutionary algorithm, the fitness is computed using 
 matches with the current best, the percentage of matches won by the generated individual is its fitness.
 
 **N.B.**: the fitness is computed against the current best and not against the nim-sum due to the difficulty to evolve the population.
+
+## Task 3.3
+
+Minmax implementation with alpha-beta pruning
+
+## Task 3.4
+
+RL-based implementation
